@@ -2,7 +2,7 @@
 
 > Right-click any `.md` file in Finder → convert to **DOCX**, **PDF** or **HTML** in one click. No LaTeX, no terminal, no fuss.
 
-[🇫🇷 Lire en français](#français) · [☕ Buy me a coffee](https://buymeacoffee.com/YOUR_HANDLE)
+[🇫🇷 Lire en français](#français) · [☕ Buy me a coffee](https://buymeacoffee.com/sebastiendqj)
 
 ![demo](assets/demo.png)
 
@@ -83,7 +83,7 @@ killall Finder
 
 ## Support
 
-If this saved you time, consider [buying me a coffee](https://buymeacoffee.com/YOUR_HANDLE) ☕
+If this saved you time, consider [buying me a coffee](https://buymeacoffee.com/sebastiendqj) ☕
 
 ## License
 
@@ -131,4 +131,4 @@ curl -fsSL https://raw.githubusercontent.com/sebastiendelarque-commits/md-quick-
 
 ### Soutenir
 
-Si l'outil te fait gagner du temps, [offre-moi un café](https://buymeacoffee.com/YOUR_HANDLE) ☕
+Si l'outil te fait gagner du temps, [offre-moi un café](https://buymeacoffee.com/sebastiendqj) ☕
