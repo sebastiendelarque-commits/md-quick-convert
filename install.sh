@@ -1,10 +1,10 @@
 #!/bin/bash
 # md-quick-convert installer
-# https://github.com/sebastiendelarque/md-quick-convert
+# https://github.com/sebastiendelarque-commits/md-quick-convert
 
 set -e
 
-REPO_RAW="https://raw.githubusercontent.com/sebastiendelarque/md-quick-convert/main"
+REPO_RAW="https://raw.githubusercontent.com/sebastiendelarque-commits/md-quick-convert/main"
 INSTALL_DIR="$HOME/.local/share/md-quick-convert"
 SERVICE_NAME="Markdown Convert.workflow"
 SERVICE_DIR="$HOME/Library/Services/$SERVICE_NAME"

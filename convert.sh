@@ -1,6 +1,6 @@
 #!/bin/bash
 # md-quick-convert — convert .md files to DOCX / PDF / HTML from Finder
-# https://github.com/sebastiendelarque/md-quick-convert
+# https://github.com/sebastiendelarque-commits/md-quick-convert
 
 set -u
 

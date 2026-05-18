@@ -24,13 +24,13 @@ Existing pandoc-based Quick Actions for macOS are either archived ([dsanson/Pand
 ## Install (one-liner)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sebastiendelarque/md-quick-convert/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sebastiendelarque-commits/md-quick-convert/main/install.sh | bash
 ```
 
 Or clone and run locally:
 
 ```bash
-git clone https://github.com/sebastiendelarque/md-quick-convert
+git clone https://github.com/sebastiendelarque-commits/md-quick-convert
 cd md-quick-convert
 ./install.sh
 ```
@@ -109,7 +109,7 @@ Les Quick Actions pandoc existantes pour macOS sont soit archivées, soit impose
 ### Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sebastiendelarque/md-quick-convert/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sebastiendelarque-commits/md-quick-convert/main/install.sh | bash
 ```
 
 ### Utilisation
