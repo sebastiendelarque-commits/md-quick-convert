@@ -4,7 +4,9 @@
 
 [🇫🇷 Lire en français](#français) · [☕ Buy me a coffee](https://buymeacoffee.com/sebastiendqj)
 
-![demo](assets/demo.png)
+<p align="center">
+  <img src="assets/demo-chooser.png" alt="Format chooser popup" width="380">
+</p>
 
 ---
 
@@ -50,6 +52,10 @@ The installer checks dependencies and offers to install pandoc via Homebrew.
 2. **Services** menu → **Convert Markdown…**
 3. Choose **DOCX**, **PDF** or **HTML** in the popup
 4. The converted file opens automatically, next to the source
+
+<p align="center">
+  <img src="assets/demo-finder.png" alt="Finder right-click → Services → Convert Markdown" width="640">
+</p>
 
 ## Customize the styling
 
