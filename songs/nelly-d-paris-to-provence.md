@@ -1,7 +1,11 @@
-# Nelly D — "Paris to Provence"
+# Nelly D — "Paris to Provence" (Underground / Eve mix)
 
-A Suno song package (a.k.a. the "bridge" you paste into Suno): style prompt +
+A Suno song package (the "bridge" you paste into Suno): style prompt +
 fully structured lyrics. Built for **Nellydi**, with love from **Seb D**.
+
+> Vibe: early-2000s underground hip-hop à la **Eve** (Ruff Ryders) — raw,
+> bad-girl swagger, gritty boom-bap — but the story underneath is pure
+> romance. Trash on the outside, soft heart on the inside.
 
 ---
 
@@ -10,91 +14,96 @@ fully structured lyrics. Built for **Nellydi**, with love from **Seb D**.
 Paste this into Suno's **Style of Music** field:
 
 ```
-2000s female hip-hop / R&B, confident female lead vocals, English,
-Y2K radio rap vibe, glossy boom-bap drums, warm bassline, soulful hook,
-finger-snaps, subtle string stabs, around 92 BPM, polished and joyful
+2000s underground hip-hop, hard boom-bap, Ruff Ryders energy, gritty
+female rapper like Eve, raw confident female vocals, aggressive bad-girl
+flow, dark piano loop, heavy 808 kick, dusty drums, vinyl crackle, deep
+sub bass, street but romantic, around 88 BPM
 ```
 
 **Quick settings**
 
-| Field            | Value                                                        |
-|------------------|-------------------------------------------------------------|
-| Title            | Paris to Provence                                           |
-| Voice            | Female lead, sweet but with attitude (early-2000s rap diva) |
-| Language         | English                                                     |
-| Mood             | Warm, grateful, celebratory                                 |
-| Tempo            | ~92 BPM                                                     |
+| Field            | Value                                                          |
+|------------------|----------------------------------------------------------------|
+| Title            | Paris to Provence                                             |
+| Voice            | Female lead, hard and raspy, bad-girl attitude (Eve-style)    |
+| Language         | English                                                        |
+| Mood             | Gritty, defiant, raw — romantic underneath                    |
+| Tempo            | ~88 BPM                                                        |
 
 ---
 
 ## Lyrics
 
 > Paste everything below (including the `[ ]` section tags) into Suno's
-> **Lyrics** field. The tags help Suno arrange the song.
+> **Lyrics** field.
 
 ```
 [Intro]
-Yeah... Nelly D, uh-huh
-Paris in the mirror, sun up ahead
-Let's go
+Uh... Nelly D, what.
+Paris behind me, dust on the dash.
+Ride or die, baby — let's get it.
 
 [Verse 1]
-Started in the city where the lights never sleep,
-Métro running circles, concrete under her feet.
-Café and the gray, the rush and the noise,
-Chasing all the maybes, never hearing her voice.
-But a girl knows a feeling when the season gotta turn,
-Pack the dreams in a suitcase, let the old life burn.
-Said goodbye to the Tower, blew a kiss to the Seine —
-Trading silver skies for a golden again.
+Grew up hard in the gray, where the city don't blink,
+Concrete kissin' my heels, cheap wine and ink.
+Métro full of strangers, everybody cold,
+Smilin' for the money while they're sellin' their soul.
+I was raised on the noise, on the grind, on the grit,
+Middle finger to the rent and the rats and the sh—,
+But a bad girl knows when the cage gotta break,
+Packed my whole damn life for my own damn sake.
+Torched the rearview, told Paris "we through,"
+Tower in the smoke — baby, watch what I do.
 
 [Pre-Chorus]
-She felt it in her chest, like a door coming open,
-Lavender callin' and her heart left hopin'...
+They said "stay in your lane," I said "girl, watch me swerve,"
+Took the love that I wanted 'cause the love's what I deserve...
 
-[Chorus]
-From Paris to Provence, she found the blessing in the sun,
-Nelly D, Nelly D, this is where her life begun.
-Olive trees and open skies, and a love that feels like home,
-Seb D holdin' her hand — girl, you'll never walk alone.
-(From Paris to Provence) — uh, that's the move,
-(Nelly D) — got nothin' left to prove.
+[Hook]
+From Paris to Provence — yeah, I burned the whole map,
+Nelly D, certified, ain't no takin' it back.
+Lavender and gunsmoke, sunshine on my skin,
+Seb D — that's my ride, that's my sin, that's my win.
+(Paris to Provence) — tell 'em how I came up,
+(Nelly D) — bad girl finally grown up.
 
 [Verse 2]
-Now the mornings smell like rosemary and rain,
-Cicadas in the heat singin' away the old pain.
-Markets in the square, ripe peaches in her bag,
-Sun on her shoulders like a brand new flag.
-She ain't running anymore, she's exactly where she's meant,
-Every euro of her heart, that's the time well spent.
-South of everything that ever held her down,
-Queen of the village, no need for a crown.
+Now the south got me feral, got me wild, got me free,
+Cicadas screamin' loud like they screamin' for me.
+Dirt under my nails, sun bitin' my back,
+Olive trees my witness, no more lookin' back.
+I'll cuss out the heavens then I'll pray on my knees,
+Rough as the mistral, soft as the breeze.
+Don't get it twisted, I'm a queen with a blade,
+But for one man only — every promise I made.
 
-[Chorus]
-From Paris to Provence, she found the blessing in the sun,
-Nelly D, Nelly D, this is where her life begun.
-Olive trees and open skies, and a love that feels like home,
-Seb D holdin' her hand — girl, you'll never walk alone.
+[Hook]
+From Paris to Provence — yeah, I burned the whole map,
+Nelly D, certified, ain't no takin' it back.
+Lavender and gunsmoke, sunshine on my skin,
+Seb D — that's my ride, that's my sin, that's my win.
 
 [Bridge]
-(Slow it down...)
-It ain't about the city, it ain't about the lights,
-It's the man who said "I got you" on the hardest of nights.
-Seb D, my anchor, you're the calm in my storm,
-You took a Paris winter and you made it summer-warm.
-So here's to the lavender, the love, and the chance —
-We danced out of Paris, baby... now we dance in Provence.
+(Beat drops low...)
+Listen — I'm rough, I'm a lot, I'm a storm in a dress,
+Talk too much, love too hard, leave the whole place a mess.
+But you held me down when the world wanted me gone,
+Seb D, you're the realest, you the calm in my song.
+So I'll bark at the dark, I'll fight every fight,
+But I crawl back to you, baby, every damn night.
+Trash-talkin' romance, that's the way that we ride —
+Wild as Provence, and you're forever my side.
 
-[Final Chorus]
-From Paris to Provence, we found the blessing in the sun,
-Nelly D, Seb D, this is where our life begun.
-Olive trees and open skies, and a love that feels like home,
-Hand in hand forever — we will never walk alone.
+[Final Hook]
+From Paris to Provence — yeah, WE burned the whole map,
+Nelly D, Seb D, ain't no takin' it back.
+Lavender and gunsmoke, sun on our skin,
+Two of us against the world — baby, we always win.
 
 [Outro]
-Yeah... Nelly D and Seb D
-Provence, baby
-This one's forever
+Uh. Nelly D. Seb D.
+Provence, what.
+Rough, raw, and forever. Out.
 ```
 
 ---
@@ -105,7 +114,8 @@ This one's forever
 2. Copy the **Suno style prompt** block into the *Style of Music* field.
 3. Copy the **Lyrics** block (with the `[ ]` tags) into the *Lyrics* field.
 4. Set the title to **Paris to Provence** and generate.
-5. If the voice isn't female enough, add `female vocals only` to the style
-   prompt and regenerate.
+5. Want it harder/dirtier? Add `aggressive`, `raspy`, `explicit energy`
+   to the style prompt. Want it softer? Drop `gunsmoke` and add `soulful`.
 
-> Tip: generate 2–3 takes and keep the one where the hook lands best.
+> Tip: this style shines with 2–3 takes — keep the one where the flow
+> sits hardest in the pocket.
