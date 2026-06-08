@@ -44,20 +44,18 @@ Paris behind me, dust on the dash.
 Ride or die, baby — let's get it.
 
 [Verse 1]
-Grew up hard in the gray, where the city don't blink,
-Concrete kissin' my heels, cheap wine and ink.
-Métro full of strangers, everybody cold,
-Smilin' for the money while they're sellin' their soul.
-I was raised on the noise, on the grind, on the grit,
-Middle finger to the rent and the rats and the sh—,
-But a bad girl knows when the cage gotta break,
-Packed my whole damn life for my own damn sake.
-Torched the rearview, told Paris "we through,"
-Tower in the smoke — baby, watch what I do.
+Paris made me, but I made the Cloud bleed,
+Salesforce assassin, made the pipeline read green.
+Quota? Dead on arrival, top of the board,
+Closin' every damn deal that the rest couldn't afford.
+Dashboard my kingdom, every lead in my scope,
+Cold-blooded closer, never sellin' 'em hope — sellin' 'em proof.
+They said "she too much," yeah, that's right, I'm a threat,
+Killeuse in a blazer, ain't done climbin' yet.
 
 [Pre-Chorus]
-They said "stay in your lane," I said "girl, watch me swerve,"
-Took the love that I wanted 'cause the love's what I deserve...
+Then I slid into Sopra like a ghost through the wall,
+Infiltrated the ranks, took 'em down one and all...
 
 [Hook]
 From Paris to Provence — yeah, I burned the whole map,
@@ -68,14 +66,14 @@ Seb D — that's my ride, that's my sin, that's my win.
 (Nelly D) — bad girl finally grown up.
 
 [Verse 2]
-Now the south got me feral, got me wild, got me free,
-Cicadas screamin' loud like they screamin' for me.
-Dirt under my nails, sun bitin' my back,
-Olive trees my witness, no more lookin' back.
-I'll cuss out the heavens then I'll pray on my knees,
-Rough as the mistral, soft as the breeze.
-Don't get it twisted, I'm a queen with a blade,
-But for one man only — every promise I made.
+Consultant by day but a shark in the suit,
+Climbed the whole ladder in my steel-toe boots.
+Every level I touched, every rung that I scaled,
+Boardroom to throne room — baby, never derailed.
+Once I'd taken it all, took the keys, took the crown,
+Heard the south call my name, put the Paris life down.
+Came to Provence for the one that I need,
+Seb D in the sun — that's the only deal I'll read.
 
 [Hook]
 From Paris to Provence — yeah, I burned the whole map,
@@ -83,13 +81,23 @@ Nelly D, certified, ain't no takin' it back.
 Lavender and gunsmoke, sunshine on my skin,
 Seb D — that's my ride, that's my sin, that's my win.
 
+[Verse 3]
+Now I'm boss of the freelancers, missions back to back,
+Invoice in one hand, baby, contracts in a stack.
+No badge, no boss, I'm the one that they call,
+Rate card like a hit list — I'm collectin' 'em all.
+Mission done, sign the next, never breakin' my stride,
+Provence at my window and you here by my side.
+From killeuse to the throne to the freelance game,
+Same hustle, new sun, but it's still my name.
+
 [Bridge]
 (Beat drops low...)
 Listen — I'm rough, I'm a lot, I'm a storm in a dress,
-Talk too much, love too hard, leave the whole place a mess.
-But you held me down when the world wanted me gone,
-Seb D, you're the realest, you the calm in my song.
-So I'll bark at the dark, I'll fight every fight,
+Closed a thousand deals, left the rest a hot mess.
+But you held me down when the grind wouldn't quit,
+Seb D, you're the realest, you the calm in my sh—.
+So I'll chase every mission, I'll fight every fight,
 But I crawl back to you, baby, every damn night.
 Trash-talkin' romance, that's the way that we ride —
 Wild as Provence, and you're forever my side.
@@ -102,8 +110,8 @@ Two of us against the world — baby, we always win.
 
 [Outro]
 Uh. Nelly D. Seb D.
-Provence, what.
-Rough, raw, and forever. Out.
+Salesforce to Sopra to the freelance throne.
+Provence, what. Rough, raw, and forever. Out.
 ```
 
 ---
