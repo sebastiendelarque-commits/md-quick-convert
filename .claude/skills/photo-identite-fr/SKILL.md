@@ -10,6 +10,12 @@ et compose la planche prête à imprimer. Le cadrage est calculé à partir de
 quatre repères relevés à la main sur la photo source : c'est plus fiable qu'une
 détection automatique, et cela rend chaque décision de cadrage vérifiable.
 
+Le même outil produit aussi, en `--style portrait`, une planche **non
+officielle** au cadrage soigné — celle que demandent l'école, la cantine ou la
+famille. Toujours demander à quoi sert la planche : le cadrage réglementaire est
+sévère (visage sur les trois quarts de la hauteur, épaules coupées) et fait
+« photo anthropométrique » sur un enfant.
+
 ## Étape 0 — contrôle de recevabilité (avant tout traitement)
 
 Regarder la photo et annoncer le verdict **avant** de produire quoi que ce soit.
@@ -32,7 +38,7 @@ Pour un enfant de moins de 6 ans, l'expression neutre et le regard vers
 l'objectif sont tolérés de façon souple, mais un sourire franc dents découvertes
 reste un motif de refus fréquent : le dire.
 
-## Étape 1 — relever les quatre repères
+## Étape 1 — relever les repères
 
 ```bash
 python3 scripts/grille.py photo.jpg -o grille.png                     # vue d'ensemble
@@ -47,6 +53,7 @@ Lire les images produites et relever, en pixels source :
 | `--chin` | bas du menton (la limite menton/cou, pas le pli sous la lèvre) |
 | `--crown` | sommet du **crâne, cheveux exclus** — invisible sous les cheveux, donc estimé |
 | `--hair-top` | sommet de la **chevelure**, mèches isolées comprises |
+| `--eyes` | ligne des yeux (milieu des pupilles) — style portrait uniquement |
 | `--axis` | axe vertical du visage : milieu des pupilles, confirmé par le milieu de la bouche |
 
 `--crown` est le repère délicat. Deux estimations à croiser :
@@ -82,6 +89,35 @@ corriger et relancer : ne jamais livrer une planche non relue.
 
 Annoncer les mesures obtenues (hauteur de visage, marges) et rappeler les
 risques de l'étape 0.
+
+## Style portrait (école, cantine, famille)
+
+```bash
+python3 scripts/make_id_photo.py photo.jpg -o ecole --style portrait \
+  --eyes 1559 --hair-top 200 --axis 1385 --photo-mm 30 45 --eye-pct 54 --sheet 10x15
+```
+
+Ce style ignore le gabarit officiel : il place la ligne des yeux et laisse de
+l'air au-dessus des cheveux, garde les épaules, et accepte n'importe quel format
+via `--photo-mm`. Il ne demande que trois repères — `--eyes`, `--hair-top`,
+`--axis`.
+
+`--eye-pct` règle à la fois la position des yeux et le serrage, puisque les deux
+contraintes déterminent le cadre :
+
+| valeur | effet |
+|---|---|
+| 44 | le plus aéré que la source permette — pour un tirage 10 × 15 ou 13 × 18 |
+| 50 | équilibré (défaut) |
+| 54 | visage bien lisible en petit format, buste juste sous les épaules |
+
+En petit format (30 × 45 mm), viser 52–54 : en dessous, le visage devient trop
+petit sur le tirage et le vêtement occupe la moitié de la vignette. Regarder
+`*_controle.png` (règle des tiers + ligne des yeux) et trancher à l'œil, pas au
+chiffre.
+
+Le dire clairement en livrant : **ces tirages ne sont pas valables à un
+guichet**.
 
 ## Fond
 
