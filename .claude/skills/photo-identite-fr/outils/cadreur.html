@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cadreur photo d'identité</title>
+<style>
+  :root {
+    --bg: #f6f6f4; --panel: #fff; --ink: #1b1b19; --muted: #6b6b66;
+    --line: #dedbd4; --accent: #1f6feb; --ok: #14804a; --warn: #b45309; --bad: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#17171a; --panel:#202024; --ink:#ececf0; --muted:#9a9aa4;
+            --line:#33333a; --accent:#6ea8fe; --ok:#4ade80; --warn:#fbbf24; --bad:#f87171; }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding:18px 22px 6px; }
+  h1 { margin:0; font-size:19px; letter-spacing:-.01em; }
+  header p { margin:4px 0 0; color:var(--muted); font-size:13.5px; max-width:70ch; }
+  main { display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:18px; padding:14px 22px 28px; align-items:start; }
+  @media (max-width:900px) { main { grid-template-columns:1fr; } }
+  .stage { background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  canvas { display:block; width:100%; height:auto; touch-action:none; cursor:grab; background:#8884; }
+  canvas.drag { cursor:grabbing; }
+  canvas.pick { cursor:crosshair; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px; }
+  .panel + .panel { margin-top:14px; }
+  h2 { margin:0 0 10px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+  label { display:block; font-size:13px; margin:9px 0 3px; color:var(--muted); }
+  select, input[type=number], button {
+    font:inherit; color:var(--ink); background:var(--bg);
+    border:1px solid var(--line); border-radius:8px; padding:7px 9px; width:100%; }
+  input[type=range] { width:100%; accent-color:var(--accent); }
+  button { cursor:pointer; background:var(--accent); color:#fff; border-color:transparent; font-weight:500; }
+  button.ghost { background:var(--bg); color:var(--ink); border-color:var(--line); font-weight:400; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .stack > * + * { margin-top:8px; }
+  .readout { font:13px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; color:var(--muted);
+             white-space:pre-wrap; word-break:break-all; }
+  .verdict { font-weight:600; font-size:13.5px; }
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  .drop { border:2px dashed var(--line); border-radius:12px; padding:44px 18px; text-align:center; color:var(--muted); }
+  .hint { font-size:12.5px; color:var(--muted); margin:8px 0 0; }
+  input[type=file] { font-size:13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Cadreur photo d'identité</h1>
+  <p>Glissez pour déplacer, molette pour zoomer. Le rapport largeur/hauteur reste verrouillé sur le
+     format choisi. Votre photo ne quitte pas ce navigateur : rien n'est envoyé nulle part.</p>
+</header>
+
+<main>
+  <div>
+    <div class="stage"><canvas id="cv" width="900" height="620"></canvas></div>
+    <p class="hint" id="hint">Chargez une photo pour commencer.</p>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2>Photo</h2>
+      <input type="file" id="file" accept="image/*">
+      <div class="hint">…ou déposez un fichier sur la zone de gauche.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Format</h2>
+      <select id="fmt"></select>
+      <div class="row" id="customWrap" hidden>
+        <div><label for="cw">Largeur mm</label><input type="number" id="cw" value="35" min="10" max="300" step="1"></div>
+        <div><label for="ch">Hauteur mm</label><input type="number" id="ch" value="45" min="10" max="400" step="1"></div>
+      </div>
+      <label for="zoom">Cadrage — serré ↔ large</label>
+      <input type="range" id="zoom" min="0" max="1000" value="500">
+      <div class="row" style="margin-top:8px">
+        <button class="ghost" id="fit">Cadrer au plus large</button>
+        <button class="ghost" id="center">Recentrer</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Contrôle du visage</h2>
+      <div class="row">
+        <button class="ghost" id="pickChin">Menton</button>
+        <button class="ghost" id="pickCrown">Sommet du crâne</button>
+      </div>
+      <div class="hint">Cliquez le bouton puis le point sur la photo. Le sommet du crâne se situe
+        sous les cheveux : visez ~20 % de la hauteur de tête au-dessus de la naissance des cheveux.</div>
+      <p class="verdict" id="verdict" style="margin:10px 0 0">Repères non placés</p>
+      <label style="margin-top:8px"><input type="checkbox" id="guides" checked style="width:auto"> Afficher les repères</label>
+    </div>
+
+    <div class="panel">
+      <h2>Sortie</h2>
+      <div class="row">
+        <div><label for="sheet">Planche</label>
+          <select id="sheet">
+            <option value="">aucune</option>
+            <option value="100x150" selected>10 × 15 cm</option>
+            <option value="130x180">13 × 18 cm</option>
+            <option value="210x297">A4</option>
+            <option value="148x210">A5</option>
+          </select></div>
+        <div><label for="dpi">Résolution</label>
+          <select id="dpi"><option>300</option><option>600</option></select></div>
+      </div>
+      <div class="stack" style="margin-top:12px">
+        <button id="dlPhoto" disabled>Télécharger la photo</button>
+        <button id="dlSheet" disabled>Télécharger la planche (JPEG)</button>
+        <button class="ghost" id="dlPdf" disabled>Télécharger la planche (PDF)</button>
+        <button class="ghost" id="copy" disabled>Copier la commande équivalente</button>
+      </div>
+      <p class="readout" id="info" style="margin-top:12px"></p>
+    </div>
+  </div>
+</main>
+
+<script>
+const FORMATS = [
+  { id:'35x45',  label:'35 × 45 mm — identité (norme FR)', w:35, h:45 },
+  { id:'30x45',  label:'30 × 45 mm — petit format école',   w:30, h:45 },
+  { id:'30x40',  label:'30 × 40 mm — petit format',         w:30, h:40 },
+  { id:'45x60',  label:'45 × 60 mm — moyen format',         w:45, h:60 },
+  { id:'100x150',label:'100 × 150 mm — tirage 10 × 15',     w:100,h:150 },
+  { id:'custom', label:'personnalisé…',                     w:35, h:45 },
+];
+const SHEET_GUTTER_MM = 2, CUT_MARK_MM = 3;
+
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const $ = id => document.getElementById(id);
+let img = null, imgName = 'photo.jpg';
+let crop = null;            // { cx, cy, h } en pixels source ; largeur = h * aspect
+let chin = null, crown = null;
+let picking = null;         // 'chin' | 'crown' | null
+let view = { scale:1, ox:0, oy:0 };
+
+const fmtSel = $('fmt');
+FORMATS.forEach(f => fmtSel.add(new Option(f.label, f.id)));
+
+function format() {
+  const f = FORMATS.find(f => f.id === fmtSel.value);
+  return f.id === 'custom' ? { w:+$('cw').value || 35, h:+$('ch').value || 45 } : f;
+}
+const aspect = () => { const f = format(); return f.w / f.h; };
+const mmPx = mm => Math.round(mm / 25.4 * (+$('dpi').value));
+
+// ---------- cadre ----------
+function maxCropH() { return Math.min(img.height, img.width / aspect()); }
+function minCropH() { return Math.max(60, maxCropH() * 0.25); }
+
+function clampCrop() {
+  const a = aspect();
+  crop.h = Math.min(maxCropH(), Math.max(minCropH(), crop.h));
+  const w = crop.h * a;
+  crop.cx = Math.min(img.width - w / 2, Math.max(w / 2, crop.cx));
+  crop.cy = Math.min(img.height - crop.h / 2, Math.max(crop.h / 2, crop.cy));
+}
+function cropBox() {
+  const w = crop.h * aspect();
+  return { x0: crop.cx - w / 2, y0: crop.cy - crop.h / 2, w, h: crop.h };
+}
+function syncZoomSlider() {
+  const lo = minCropH(), hi = maxCropH();
+  $('zoom').value = Math.round((crop.h - lo) / (hi - lo) * 1000);
+}
+
+// ---------- rendu ----------
+function layout() {
+  const box = cv.parentElement.getBoundingClientRect();
+  cv.width = Math.max(320, Math.round(box.width));
+  cv.height = Math.min(760, Math.round(cv.width * 0.82));
+  if (!img) return;
+  view.scale = Math.min(cv.width / img.width, cv.height / img.height) * 0.94;
+  view.ox = (cv.width - img.width * view.scale) / 2;
+  view.oy = (cv.height - img.height * view.scale) / 2;
+}
+const toView = (x, y) => [view.ox + x * view.scale, view.oy + y * view.scale];
+const toSrc  = (x, y) => [(x - view.ox) / view.scale, (y - view.oy) / view.scale];
+
+function draw() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  if (!img) {
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--muted');
+    ctx.font = '15px system-ui, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('Déposez une photo ici', cv.width / 2, cv.height / 2);
+    return;
+  }
+  ctx.drawImage(img, view.ox, view.oy, img.width * view.scale, img.height * view.scale);
+
+  const b = cropBox();
+  const [vx, vy] = toView(b.x0, b.y0), vw = b.w * view.scale, vh = b.h * view.scale;
+  ctx.fillStyle = 'rgba(0,0,0,.55)';
+  ctx.fillRect(0, 0, cv.width, vy);
+  ctx.fillRect(0, vy + vh, cv.width, cv.height - vy - vh);
+  ctx.fillRect(0, vy, vx, vh);
+  ctx.fillRect(vx + vw, vy, cv.width - vx - vw, vh);
+
+  if ($('guides').checked) {
+    ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 1;
+    for (const t of [1/3, 2/3]) {
+      ctx.beginPath(); ctx.moveTo(vx, vy + vh * t); ctx.lineTo(vx + vw, vy + vh * t); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(vx + vw * t, vy); ctx.lineTo(vx + vw * t, vy + vh); ctx.stroke();
+    }
+    if (chin) drawMark(chin, '#14b8a6', 'menton');
+    if (crown) drawMark(crown, '#f59e0b', 'crâne');
+    if (chin && crown) drawFaceBand(b, vx, vy, vw, vh);
+  }
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.strokeRect(vx, vy, vw, vh);
+}
+
+function drawMark(p, color, label) {
+  const [x, y] = toView(p.x, p.y);
+  ctx.strokeStyle = color; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x - 9, y); ctx.lineTo(x + 9, y); ctx.stroke();
+  ctx.fillStyle = color; ctx.font = '11px system-ui, sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText(label, x + 12, y + 4);
+}
+
+// bande 32-36 mm rapportée au menton : uniquement parlante au format 35 x 45
+function drawFaceBand(b, vx, vy, vw, vh) {
+  const f = format();
+  if (Math.abs(f.w / f.h - 35 / 45) > 0.02) return;
+  const pxPerMm = vh / f.h;
+  const [, chinV] = toView(0, chin.y);
+  ctx.setLineDash([5, 4]); ctx.lineWidth = 1;
+  for (const mm of [32, 36]) {
+    const y = chinV - mm * pxPerMm;
+    if (y < vy || y > vy + vh) continue;
+    ctx.strokeStyle = 'rgba(255,180,60,.9)';
+    ctx.beginPath(); ctx.moveTo(vx, y); ctx.lineTo(vx + vw, y); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+}
+
+// ---------- mesures ----------
+function faceMm() {
+  if (!chin || !crown) return null;
+  return (chin.y - crown.y) / crop.h * format().h;
+}
+function refresh() {
+  clampCrop(); syncZoomSlider(); draw();
+  const f = format(), b = cropBox(), mm = faceMm();
+  const v = $('verdict');
+  if (mm == null) { v.textContent = 'Repères non placés'; v.className = 'verdict'; }
+  else {
+    const norme = Math.abs(f.w / f.h - 35 / 45) < 0.02;
+    const ok = mm >= 32 && mm <= 36;
+    v.textContent = `Visage ${mm.toFixed(1)} mm` + (norme
+      ? (ok ? ' — conforme (32–36 mm)' : ` — hors norme, ${mm < 32 ? 'trop petit' : 'trop grand'}`)
+      : ' (hors format identité)');
+    v.className = 'verdict ' + (!norme ? 'warn' : ok ? 'ok' : 'bad');
+  }
+  const reduc = b.h / mmPx(f.h);
+  $('info').textContent =
+    `cadre source : ${Math.round(b.x0)}, ${Math.round(b.y0)} → ${Math.round(b.x0 + b.w)}, ${Math.round(b.y0 + b.h)}\n` +
+    `sortie : ${mmPx(f.w)} × ${mmPx(f.h)} px à ${$('dpi').value} dpi` +
+    (reduc < 1 ? `\n⚠ agrandissement ×${(1 / reduc).toFixed(1)} : qualité insuffisante pour l'impression`
+               : `\nréduction ×${reduc.toFixed(1)}`);
+}
+
+// ---------- export ----------
+function renderPhoto() {
+  const f = format(), b = cropBox();
+  const c = document.createElement('canvas');
+  c.width = mmPx(f.w); c.height = mmPx(f.h);
+  const g = c.getContext('2d');
+  g.imageSmoothingQuality = 'high';
+  g.drawImage(img, b.x0, b.y0, b.w, b.h, 0, 0, c.width, c.height);
+  return c;
+}
+function renderSheet(photo) {
+  const [sw, sh] = $('sheet').value.split('x').map(Number);
+  const c = document.createElement('canvas');
+  c.width = mmPx(sw); c.height = mmPx(sh);
+  const g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+  const gut = mmPx(SHEET_GUTTER_MM), tick = mmPx(CUT_MARK_MM);
+  const cols = Math.max(1, Math.floor((c.width + gut) / (photo.width + gut)));
+  const rows = Math.max(1, Math.floor((c.height + gut) / (photo.height + gut)));
+  const ox = Math.round((c.width - (cols * photo.width + (cols - 1) * gut)) / 2);
+  const oy = Math.round((c.height - (rows * photo.height + (rows - 1) * gut)) / 2);
+  g.strokeStyle = '#a0a0a0'; g.lineWidth = 1;
+  for (let r = 0; r < rows; r++) for (let col = 0; col < cols; col++) {
+    const x = ox + col * (photo.width + gut), y = oy + r * (photo.height + gut);
+    g.drawImage(photo, x, y);
+    for (const [cx, cy] of [[x, y], [x + photo.width, y], [x, y + photo.height], [x + photo.width, y + photo.height]]) {
+      const sx = cx === x ? -1 : 1, sy = cy === y ? -1 : 1;
+      g.beginPath(); g.moveTo(cx + sx * 2, cy + .5); g.lineTo(cx + sx * tick, cy + .5); g.stroke();
+      g.beginPath(); g.moveTo(cx + .5, cy + sy * 2); g.lineTo(cx + .5, cy + sy * tick); g.stroke();
+    }
+  }
+  return { canvas: c, count: cols * rows, wMm: sw, hMm: sh };
+}
+const toBlob = (c, type, q) => new Promise(r => c.toBlob(r, type, q));
+function save(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+const base = () => imgName.replace(/\.[^.]+$/, '');
+
+// PDF minimal : la planche JPEG posée à la taille physique exacte
+async function makePdf(canvas, wMm, hMm) {
+  const jpeg = new Uint8Array(await (await toBlob(canvas, 'image/jpeg', .95)).arrayBuffer());
+  const W = (wMm / 25.4 * 72).toFixed(2), H = (hMm / 25.4 * 72).toFixed(2);
+  const content = `q ${W} 0 0 ${H} 0 0 cm /Im0 Do Q`;
+  const objs = [
+    '<</Type/Catalog/Pages 2 0 R>>',
+    '<</Type/Pages/Kids[3 0 R]/Count 1>>',
+    `<</Type/Page/Parent 2 0 R/MediaBox[0 0 ${W} ${H}]/Resources<</XObject<</Im0 4 0 R>>>>/Contents 5 0 R>>`,
+    { dict: `<</Type/XObject/Subtype/Image/Width ${canvas.width}/Height ${canvas.height}` +
+            `/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length ${jpeg.length}>>`, data: jpeg },
+    { dict: `<</Length ${content.length}>>`, data: new TextEncoder().encode(content) },
+  ];
+  const parts = [], enc = new TextEncoder();
+  let len = 0;
+  const push = s => { const u = typeof s === 'string' ? enc.encode(s) : s; parts.push(u); len += u.length; };
+  push('%PDF-1.4\n');
+  const offsets = [];
+  objs.forEach((o, i) => {
+    offsets.push(len);
+    push(`${i + 1} 0 obj\n`);
+    if (typeof o === 'string') push(o + '\n');
+    else { push(o.dict + '\nstream\n'); push(o.data); push('\nendstream\n'); }
+    push('endobj\n');
+  });
+  const xref = len;
+  push(`xref\n0 ${objs.length + 1}\n0000000000 65535 f \n`);
+  offsets.forEach(o => push(String(o).padStart(10, '0') + ' 00000 n \n'));
+  push(`trailer\n<</Size ${objs.length + 1}/Root 1 0 R>>\nstartxref\n${xref}\n%%EOF\n`);
+  const out = new Uint8Array(len); let p = 0;
+  for (const u of parts) { out.set(u, p); p += u.length; }
+  return new Blob([out], { type: 'application/pdf' });
+}
+
+// ---------- interactions ----------
+async function load(file) {
+  img = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  imgName = file.name || 'photo.jpg';
+  chin = crown = null; picking = null;
+  crop = { cx: img.width / 2, cy: img.height / 2, h: Math.min(img.height, img.width / aspect()) };
+  layout();
+  ['dlPhoto', 'dlSheet', 'dlPdf', 'copy'].forEach(id => $(id).disabled = false);
+  $('hint').textContent = `${imgName} — ${img.width} × ${img.height} px. Glissez pour déplacer, molette pour zoomer.`;
+  refresh();
+}
+$('file').onchange = e => e.target.files[0] && load(e.target.files[0]);
+cv.addEventListener('dragover', e => e.preventDefault());
+cv.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) load(f); });
+
+let drag = null;
+cv.addEventListener('pointerdown', e => {
+  if (!img) return;
+  const r = cv.getBoundingClientRect();
+  const x = (e.clientX - r.left) * cv.width / r.width, y = (e.clientY - r.top) * cv.height / r.height;
+  if (picking) {
+    const [sx, sy] = toSrc(x, y);
+    const p = { x: Math.round(sx), y: Math.round(sy) };
+    if (picking === 'chin') chin = p; else crown = p;
+    picking = null; cv.classList.remove('pick');
+    $('pickChin').classList.add('ghost'); $('pickCrown').classList.add('ghost');
+    refresh(); return;
+  }
+  drag = { x, y, cx: crop.cx, cy: crop.cy }; cv.setPointerCapture(e.pointerId); cv.classList.add('drag');
+});
+cv.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const r = cv.getBoundingClientRect();
+  const x = (e.clientX - r.left) * cv.width / r.width, y = (e.clientY - r.top) * cv.height / r.height;
+  crop.cx = drag.cx - (x - drag.x) / view.scale;
+  crop.cy = drag.cy - (y - drag.y) / view.scale;
+  refresh();
+});
+const endDrag = () => { drag = null; cv.classList.remove('drag'); };
+cv.addEventListener('pointerup', endDrag);
+cv.addEventListener('pointercancel', endDrag);
+cv.addEventListener('wheel', e => {
+  if (!img) return;
+  e.preventDefault();
+  crop.h *= Math.exp(e.deltaY * 0.0012);
+  refresh();
+}, { passive: false });
+
+$('zoom').oninput = () => {
+  if (!img) return;
+  const lo = minCropH(), hi = maxCropH();
+  crop.h = lo + (hi - lo) * ($('zoom').value / 1000);
+  refresh();
+};
+$('fit').onclick = () => { if (img) { crop.h = maxCropH(); refresh(); } };
+$('center').onclick = () => { if (img) { crop.cx = img.width / 2; refresh(); } };
+$('guides').onchange = draw;
+for (const id of ['fmt', 'cw', 'ch', 'dpi']) $(id).oninput = () => {
+  $('customWrap').hidden = fmtSel.value !== 'custom';
+  if (img) refresh();
+};
+$('pickChin').onclick = () => { picking = 'chin'; cv.classList.add('pick'); };
+$('pickCrown').onclick = () => { picking = 'crown'; cv.classList.add('pick'); };
+
+$('dlPhoto').onclick = async () => {
+  const f = format();
+  save(await toBlob(renderPhoto(), 'image/jpeg', .95), `${base()}_${f.w}x${f.h}.jpg`);
+};
+$('dlSheet').onclick = async () => {
+  if (!$('sheet').value) return alert('Choisissez un format de planche.');
+  const s = renderSheet(renderPhoto());
+  save(await toBlob(s.canvas, 'image/jpeg', .95), `${base()}_planche_${s.wMm}x${s.hMm}.jpg`);
+};
+$('dlPdf').onclick = async () => {
+  if (!$('sheet').value) return alert('Choisissez un format de planche.');
+  const s = renderSheet(renderPhoto());
+  save(await makePdf(s.canvas, s.wMm, s.hMm), `${base()}_planche_${s.wMm}x${s.hMm}.pdf`);
+};
+$('copy').onclick = async () => {
+  const f = format(), b = cropBox(), sheet = $('sheet').value;
+  const sheets = { '100x150':'10x15', '130x180':'13x18', '210x297':'a4', '148x210':'a5' };
+  const cmd = `python3 make_id_photo.py ${imgName} -o sortie \\\n` +
+    `  --box ${Math.round(b.x0)} ${Math.round(b.y0)} ${Math.round(b.x0 + b.w)} ${Math.round(b.y0 + b.h)} \\\n` +
+    `  --photo-mm ${f.w} ${f.h} --dpi ${$('dpi').value} --sheet ${sheet ? sheets[sheet] : 'aucune'}`;
+  try { await navigator.clipboard.writeText(cmd); $('copy').textContent = 'Commande copiée'; }
+  catch { prompt('Commande :', cmd); }
+  setTimeout(() => $('copy').textContent = 'Copier la commande équivalente', 1800);
+};
+
+addEventListener('resize', () => { layout(); if (img) refresh(); else draw(); });
+layout(); draw();
+</script>
+</body>
+</html>

@@ -7,6 +7,10 @@
       script prend la plus grande hauteur tenable dans cette plage tout en
       gardant la chevelure entiere avec une marge au-dessus de la tete.
 
+  --box X0 Y0 X1 Y1
+      Cadre impose en pixels source, tel que le produit l'outil interactif
+      outils/cadreur.html. Le rapport du cadre doit correspondre a --photo-mm.
+
   --style portrait
       Cadrage libre, pour une planche d'ecole ou de famille : le visage est
       plus petit dans le cadre, les epaules restent visibles, la ligne des
@@ -260,7 +264,11 @@ def render_control_identite(photo, face_mm, top_gap_mm, below_chin_mm, dpi):
 
 
 def render_control_portrait(photo, eye_pct, headroom, dpi):
-    """Photo + reperes de composition (ligne des yeux, tiers, air au-dessus)."""
+    """Photo + reperes de composition (ligne des yeux, tiers, air au-dessus).
+
+    eye_pct et headroom valent None quand le cadre vient de --box : on ne trace
+    alors que les tiers et l'axe.
+    """
     ctl = photo.convert("RGB")
     ctl = ctl.resize((ctl.width * 2, ctl.height * 2), Image.LANCZOS)
     W, H = ctl.size
@@ -268,12 +276,14 @@ def render_control_portrait(photo, eye_pct, headroom, dpi):
     for t in (1 / 3, 2 / 3):           # regle des tiers
         d.line([(0, H * t), (W, H * t)], fill=(255, 255, 255), width=1)
         d.line([(W * t, 0), (W * t, H)], fill=(255, 255, 255), width=1)
-    y = H * eye_pct
-    d.line([(0, y), (W, y)], fill=(0, 190, 90), width=2)
-    d.text((6, y + 4), f"ligne des yeux  {eye_pct * 100:.0f} % de la hauteur", fill=(0, 190, 90))
-    y = H * headroom
-    d.line([(0, y), (W, y)], fill=(0, 140, 255), width=1)
-    d.text((6, y + 4), f"air au-dessus des cheveux  {headroom * 100:.1f} %", fill=(0, 140, 255))
+    if eye_pct is not None:
+        y = H * eye_pct
+        d.line([(0, y), (W, y)], fill=(0, 190, 90), width=2)
+        d.text((6, y + 4), f"ligne des yeux  {eye_pct * 100:.0f} % de la hauteur", fill=(0, 190, 90))
+    if headroom is not None:
+        y = H * headroom
+        d.line([(0, y), (W, y)], fill=(0, 140, 255), width=1)
+        d.text((6, y + 4), f"air au-dessus des cheveux  {headroom * 100:.1f} %", fill=(0, 140, 255))
     d.line([(W / 2, 0), (W / 2, H)], fill=(0, 140, 255), width=1)
     d.rectangle([0, 0, W - 1, H - 1], outline=(200, 0, 0), width=3)
     return ctl
@@ -290,9 +300,11 @@ def main():
     p.add_argument("--crown", type=float, help="y du sommet du crane hors cheveux (px)")
     p.add_argument("--hairline", type=float,
                    help="y de la naissance des cheveux ; estime --crown si absent")
-    p.add_argument("--hair-top", type=float, required=True, help="y du sommet de la chevelure (px)")
+    p.add_argument("--hair-top", type=float, help="y du sommet de la chevelure (px)")
     p.add_argument("--eyes", type=float, help="y de la ligne des yeux (px, style portrait)")
-    p.add_argument("--axis", type=float, required=True, help="x de l'axe du visage (px)")
+    p.add_argument("--axis", type=float, help="x de l'axe du visage (px)")
+    p.add_argument("--box", type=float, nargs=4, metavar=("X0", "Y0", "X1", "Y1"),
+                   help="cadre impose en pixels source (sortie de outils/cadreur.html)")
     p.add_argument("--photo-mm", type=float, nargs=2, metavar=("L", "H"),
                    help="format de la photo ; defaut 35x45 (identite) ou 30x40 (portrait)")
     p.add_argument("--face-mm", type=float, default=None,
@@ -320,9 +332,23 @@ def main():
     W, H = src.size
     prefix = args.prefix or ("photo_identite" if args.style == "identite" else "portrait")
 
-    if args.style == "identite":
+
+    if args.box:
+        x0, y0, x1, y1 = args.box
+        w_mm, h_mm = args.photo_mm or (ID_W, ID_H)
+        if x1 <= x0 or y1 <= y0:
+            raise SystemExit("--box attend X0 Y0 X1 Y1 avec X1 > X0 et Y1 > Y0.")
+        got, want = (x1 - x0) / (y1 - y0), w_mm / h_mm
+        if abs(got - want) / want > 0.01:
+            raise SystemExit(f"--box est au rapport {got:.3f}, incompatible avec "
+                             f"--photo-mm {w_mm:g}x{h_mm:g} ({want:.3f}).")
+        box = [x0, y0, x1, y1]
+        prefix = args.prefix or "photo"
+    elif args.style == "identite":
         if args.chin is None:
             raise SystemExit("--chin est requis en style identite.")
+        if args.hair_top is None or args.axis is None:
+            raise SystemExit("--hair-top et --axis sont requis en style identite.")
         crown = args.crown
         if crown is None:
             if args.hairline is None:
@@ -339,8 +365,8 @@ def main():
             args.top_gap_mm, args.below_chin_mm)
         box = box_identite(args.chin, args.axis, mm_per_px, below_chin)
     else:
-        if args.eyes is None:
-            raise SystemExit("--eyes est requis en style portrait.")
+        if args.eyes is None or args.hair_top is None or args.axis is None:
+            raise SystemExit("--eyes, --hair-top et --axis sont requis en style portrait.")
         w_mm, h_mm = args.photo_mm or (PORTRAIT_W, PORTRAIT_H)
         eye_pct, headroom_pct = args.eye_pct / 100.0, args.headroom_pct / 100.0
         box = box_portrait(args.eyes, args.hair_top, args.axis, (W, H),
@@ -361,7 +387,9 @@ def main():
     photo.save(single.with_suffix(".jpg"), quality=95, subsampling=0, dpi=(args.dpi, args.dpi))
     made = [single, single.with_suffix(".jpg")]
 
-    if args.style == "identite":
+    if args.box:
+        ctl = render_control_portrait(photo, None, None, args.dpi)
+    elif args.style == "identite":
         ctl = render_control_identite(photo, face_mm, top_gap, below_chin, args.dpi)
     else:
         ctl = render_control_portrait(
@@ -379,15 +407,18 @@ def main():
         made += [sp, sp.with_suffix(".jpg"), sp.with_suffix(".pdf")]
 
     print("Cadrage calcule")
-    print(f"  style            : {args.style}  ({w_mm:g} x {h_mm:g} mm)")
+    print(f"  style            : {'boite' if args.box else args.style}  "
+          f"({w_mm:g} x {h_mm:g} mm)")
     print(f"  cadre source     : x {box[0]:.0f} -> {box[2]:.0f}, y {box[1]:.0f} -> {box[3]:.0f}")
     print(f"                     ({box[2]-box[0]:.0f} x {box[3]-box[1]:.0f} px, "
           f"reduction x{(box[3]-box[1])/px(h_mm, args.dpi):.1f})")
-    if args.style == "identite":
+    if args.box:
+        pass
+    elif args.style == "identite":
         print(f"  hauteur visage   : {face_mm:.1f} mm      (norme 32-36)")
         print(f"  marge au-dessus  : {top_gap:.1f} mm      (cheveux compris)")
         print(f"  sous le menton   : {below_chin:.1f} mm")
-    else:
+    elif args.style == "portrait":
         h_box = box[3] - box[1]
         print(f"  ligne des yeux   : {(args.eyes - box[1]) / h_box * 100:.0f} % de la hauteur")
         print(f"  air au-dessus    : {(args.hair_top - box[1]) / h_box * 100:.1f} %")

@@ -16,6 +16,41 @@ famille. Toujours demander à quoi sert la planche : le cadrage réglementaire e
 sévère (visage sur les trois quarts de la hauteur, épaules coupées) et fait
 « photo anthropométrique » sur un enfant.
 
+Deux chemins mènent au même résultat : les scripts, qui calculent le cadrage à
+partir de repères et gardent la trace de chaque décision, et `outils/cadreur.html`,
+qui laisse cadrer à la souris. Proposer l'outil dès que l'utilisateur veut
+arbitrer lui-même le cadrage ou en essayer plusieurs — c'est plus rapide que de
+lui envoyer des variantes une par une.
+
+## L'outil interactif
+
+`outils/cadreur.html` — une page autonome, à ouvrir directement dans un
+navigateur (double-clic, aucune installation, aucun serveur). La photo est lue
+localement : **rien n'est envoyé nulle part**, ce qui compte quand il s'agit de
+la photo d'un enfant.
+
+- rapport largeur/hauteur verrouillé sur le format choisi (35 × 45 et autres
+  formats courants, ou dimensions libres) — on ne peut pas sortir des
+  proportions réglementaires en cadrant ;
+- glisser pour déplacer, molette ou curseur pour serrer/desserrer ;
+- deux clics (menton, sommet du crâne) affichent la **hauteur de visage en mm**
+  en direct, avec le verdict 32–36 mm et la bande de tolérance sur l'image ;
+- export de la photo, de la planche (JPEG) et de la planche en **PDF à la taille
+  physique exacte**, à 300 ou 600 dpi ;
+- « Copier la commande équivalente » rend le cadrage reproductible en ligne de
+  commande :
+
+```bash
+python3 scripts/make_id_photo.py photo.jpg -o sortie \
+  --box 397 59 2373 2599 --photo-mm 35 45 --sheet 10x15
+```
+
+`--box` prend le cadre en pixels source et court-circuite le calcul : le script
+vérifie seulement que le rapport correspond à `--photo-mm`, puis produit les
+fichiers avec le même rendu (accentuation, planche, PDF) que les autres modes.
+Utile pour rejouer un cadrage validé à l'œil, ou le décliner en plusieurs
+formats de planche.
+
 ## Étape 0 — contrôle de recevabilité (avant tout traitement)
 
 Regarder la photo et annoncer le verdict **avant** de produire quoi que ce soit.
@@ -139,4 +174,5 @@ mieux qu'une retouche visible.
 
 ## Dépendances
 
-`pip install pillow` (`numpy` en plus pour `--bg`).
+`pip install pillow` (`numpy` en plus pour `--bg`). L'outil `outils/cadreur.html`
+ne dépend de rien : un navigateur suffit.
