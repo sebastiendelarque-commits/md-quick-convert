@@ -2,7 +2,7 @@
 
 Notes du 19 septembre 2026.
 
-> **Statut de cette note (mise à jour du 19 septembre, session locale).** L'audit réel est fait : voir [`mespilotis-accueil-ux-audit-constats.md`](mespilotis-accueil-ux-audit-constats.md) et les deux captures (`mespilotis-accueil-mobile.png`, `mespilotis-accueil-desktop.png`, anonymisées car ce dépôt est public). Cette grille reste le raisonnement de départ ; chaque hypothèse du § 2 porte désormais son verdict. **Le plan d'action du § 6 est remplacé par le § 5 des constats** : l'accueil avait été refondu la veille, et quatre hypothèses sur dix étaient fausses.
+> **Statut de cette note (mise à jour du 19 septembre, session locale).** L'audit réel est fait : voir [`mespilotis-accueil-ux-audit-constats.md`](mespilotis-accueil-ux-audit-constats.md) et les deux captures (`mespilotis-accueil-mobile.png`, `mespilotis-accueil-desktop.png`, anonymisées car ce dépôt est public). Cette grille reste le raisonnement de départ ; chaque hypothèse du § 2 porte désormais son verdict. **Le plan d'action du § 6 est remplacé par le § 5 des constats** : l'accueil avait été refondu la veille, et quatre hypothèses sur dix étaient fausses. Pour la même raison (dépôt public), les montants, noms et identifiants de cette grille ont été remplacés par des valeurs fictives.
 
 ---
 
@@ -41,7 +41,7 @@ Autrement dit : en trois mois et demi, l'outil est passé de **2 pages** (Pilote
 
 1. **Toi, le matin** (téléphone, 30 secondes) : où j'en suis, qu'est-ce qui a bougé, qu'est-ce que je dois faire aujourd'hui.
 2. **Toi, en session de travail** (desktop, 20 minutes) : facturation, relances, point avant un appel au cabinet, simulation.
-3. **Le cabinet Fayette & Associés** (Mark Andreani, Amal Ammari) et **Adrien de Montaigu** : lecture ponctuelle, sans ton contexte. Amal a écrit le 11 sept. qu'elle allait « prendre en main Pennylane ainsi que votre tableau de bord afin de voir comment je peux vous aider à optimiser leur utilisation ».
+3. **Ton cabinet comptable** (deux interlocuteurs) et **un contact extérieur** : lecture ponctuelle, sans ton contexte. Ta comptable a écrit le 11 sept. qu'elle allait « prendre en main Pennylane ainsi que votre tableau de bord afin de voir comment je peux vous aider à optimiser leur utilisation ».
 
 **Le rituel du matin existe déjà ailleurs.** L'artefact « Brief du matin » (31 août) montre le format qui marche pour toi : la journée dessinée en relief, trois blocs horaires, puis « Ce qui a besoin de toi » (5 items max, chacun relié à un fil Gmail) et « Déjà réglé ». Les sessions « Briefing quotidien » tournent quasi tous les jours depuis fin août. **Ce brief et l'accueil de mespilotis sont deux réponses à la même question, à deux endroits.** C'est le principal levier de productivité de cette note (§ 4).
 
@@ -84,7 +84,7 @@ Pour chaque critère : pourquoi ça pèse sur ta journée, l'hypothèse que je f
 
 - **Pourquoi.** Avec dix modules, la tentation est une grille de cartes « Pilote / Fiscal / Foyer / SEO… ». Chaque carte force un clic, et l'accueil ne répond alors à aucune des trois questions du § 1.
 - **Hypothèse — fausse** (ni redirection ni tuiles : vue d'ensemble avec verdict, actions et trésorerie) : l'accueil actuel est soit une redirection vers `/dashboard/pilote/`, soit un hub de liens. Dans le premier cas, l'accueil *est* la page Pilote, et les autres modules ne sont visibles que via le menu. Dans le second, les chiffres sont à un clic.
-- **Reco.** Un accueil en **une colonne, cinq blocs** (§ 5) : en-tête avec fraîcheur, 3 chiffres maîtres avec delta, « ce qui a besoin de toi », échéances à 90 jours, puis les modules avec **une ligne d'état chacun** (ex. « Fiscal · IRCEC 11 612 € au 31/12 · à jour »). Le module devient une ligne de statut, pas une porte fermée.
+- **Reco.** Un accueil en **une colonne, cinq blocs** (§ 5) : en-tête avec fraîcheur, 3 chiffres maîtres avec delta, « ce qui a besoin de toi », échéances à 90 jours, puis les modules avec **une ligne d'état chacun** (ex. « Fiscal · IRCEC 00 000 € au 31/12 · à jour »). Le module devient une ligne de statut, pas une porte fermée.
 
 ### C. Fraîcheur des données
 
@@ -100,7 +100,7 @@ Pour chaque critère : pourquoi ça pèse sur ta journée, l'hypothèse que je f
 
 ### E. Échéances et actions
 
-- **Pourquoi.** Les deux gros montants de fin d'année sont connus (acompte TVA 3 729 € le 15 déc., IRCEC 11 612 € au 31 déc.). S'ils ne sont que dans l'onglet Fiscal, ils ne pèsent pas sur les décisions de trésorerie du quotidien.
+- **Pourquoi.** Les deux grosses sorties de fin d'année sont connues (acompte de TVA mi-décembre, régularisation IRCEC fin décembre ; montants dans `data/provisions-snapshot.json`). S'ils ne sont que dans l'onglet Fiscal, ils ne pèsent pas sur les décisions de trésorerie du quotidien.
 - **Hypothèse — à moitié vraie** (retards + prochaine échéance seulement ; TVA de décembre et IRCEC absentes de l'accueil) : échéances présentes dans Fiscal, absentes de l'accueil.
 - **Reco.** Un bandeau **« Prochaines sorties, 90 jours »** sur l'accueil, trié par date, alimenté par Fiscal et par les prévisions cash. Chaque ligne : date, montant, statut (provisionné / à provisionner), et le lien vers la méthodo.
 
@@ -164,11 +164,11 @@ Ordre de grandeur : **25 à 40 heures par an**, soit une semaine de travail, ré
 Je n'ai pas trouvé la skill (§ 0), je ne peux donc pas auditer son contenu. Mais ton écosystème de routines est lisible dans l'historique des sessions, et deux lectures du mot « concierge » sont possibles. **Le design ci-dessous marche pour les deux.**
 
 - **Lecture A — le concierge orchestre les routines** : briefing quotidien, mise à jour des pilotis, monitoring SEO hebdo, revue de presse, routine LinkedIn nocturne. Il prépare la journée, comme un concierge d'hôtel prépare la chambre.
-- **Lecture B — le concierge répond à la demande** : « qu'est-ce que je dois relancer ? », « où en est ma tréso à 90 jours ? », « prépare le point avec Amal ».
+- **Lecture B — le concierge répond à la demande** : « qu'est-ce que je dois relancer ? », « où en est ma tréso à 90 jours ? », « prépare le point avec le cabinet ».
 
 ### Le principe : le concierge écrit dans l'accueil, l'accueil renvoie vers le concierge
 
-Aujourd'hui (hypothèse), le brief du matin sort en artefact et les chiffres vivent sur mespilotis : deux fenêtres, deux moments, et rien ne relie « Cannes : onze jours sans nouvelles du devis » au montant de l'encours. Le gain vient de la **fusion sur l'écran d'accueil**.
+Aujourd'hui (hypothèse), le brief du matin sort en artefact et les chiffres vivent sur mespilotis : deux fenêtres, deux moments, et rien ne relie « Devis A : onze jours sans nouvelles » au montant de l'encours. Le gain vient de la **fusion sur l'écran d'accueil**.
 
 ```
    Routines Claude (Mac, 7 h)                 mespilotis (Cloudflare Pages)
@@ -193,20 +193,20 @@ Le concierge produit un fichier, le générateur le rend. Ni l'un ni l'autre ne 
   "day_shape": "Deux rendez-vous le matin, une heure libre après déjeuner.",
   "needs_you": [
     {
-      "title": "Cannes : onze jours sans nouvelles du devis",
-      "why": "Devis envoyé le 20 août, fil muet depuis. Soirée le 28 sept.",
-      "source_url": "https://mail.google.com/mail/u/0/#inbox/1a01e37e755abe6e",
+      "title": "Devis A : onze jours sans nouvelles",
+      "why": "Devis envoyé il y a onze jours, fil muet depuis. Événement dans quatre semaines.",
+      "source_url": "https://mail.google.com/mail/u/0/#inbox/<thread_id>",
       "due": "2026-09-21",
       "kind": "relance",
       "amount_ref": "devis_2026_08_xxx"
     }
   ],
   "done": [
-    { "title": "Strasbourg est signé", "source_url": "https://mail.google.com/…" }
+    { "title": "Devis B signé", "source_url": "https://mail.google.com/…" }
   ],
   "deadlines": [
-    { "label": "Acompte TVA", "date": "2026-12-15", "amount": 3729, "status": "à provisionner" },
-    { "label": "IRCEC rattrapage", "date": "2026-12-31", "amount": 11612, "status": "à provisionner" }
+    { "label": "Acompte TVA", "date": "2026-12-15", "amount": 0, "status": "à provisionner" },
+    { "label": "IRCEC rattrapage", "date": "2026-12-31", "amount": 0, "status": "à provisionner" }
   ],
   "data_quality": {
     "status": "orange",
@@ -238,7 +238,7 @@ Sur l'accueil, à côté de chaque bloc, un bouton **« Demander au concierge »
 - Sur les chiffres maîtres : « Explique-moi le passage de l'encours de X à Y depuis mardi. »
 - Sur une échéance : « Prépare le virement de provision IRCEC et vérifie que le cash à 90 jours le supporte. »
 - Sur la qualité des données : « Rapproche les 14 opérations en attente dans Pennylane, et liste celles où tu as un doute. »
-- En pied de page : « Prépare le point avec Amal » → le concierge assemble Fiscal + questions ouvertes + derniers mails du cabinet.
+- En pied de page : « Prépare le point avec le cabinet » → le concierge assemble Fiscal + questions ouvertes + derniers mails du cabinet.
 
 Cinq prompts fixes suffisent. Ce sont ceux que tu tapes déjà à la main dans les sessions « Mise à jour des pilotis » et « Briefing quotidien ».
 
@@ -253,17 +253,17 @@ Une colonne, lisible sur téléphone sans zoom, le tout au-dessus du pli pour le
 │ Ven. 19 sept. · Données au 19/09 07:42 · ● à jour          │  1. En-tête + fraîcheur
 ├──────────────────────────────────────────────────────────┤
 │  CA encaissé 2026        Encours           Cash net 90 j  │  2. Trois chiffres maîtres
-│  148 k€                  27 400 €          +12 300 €      │     + delta daté
-│  +6 050 € dep. mar. 16   −4 200 € dep. mar. ● stable      │
+│  000 k€                  00 000 €          +00 000 €      │     + delta daté
+│  +0 000 € dep. mar. 16   −0 000 € dep. mar. ● stable      │
 ├──────────────────────────────────────────────────────────┤
 │ CE QUI A BESOIN DE TOI                                     │  3. Concierge (≤ 5)
-│ 01 Cannes : onze jours sans nouvelles du devis   → mail   │
-│ 02 Patryck attend une heure de départ            → mail   │
+│ 01 Devis A : onze jours sans nouvelles           → mail   │
+│ 02 Un prestataire attend un horaire              → mail   │
 │ 03 14 opérations à rapprocher dans Pennylane     → PL     │
 ├──────────────────────────────────────────────────────────┤
 │ PROCHAINES SORTIES · 90 J                                  │  4. Échéances
-│ 15 déc.  Acompte TVA    3 729 €   à provisionner           │
-│ 31 déc.  IRCEC          11 612 €  à provisionner           │
+│ 15 déc.  Acompte TVA    0 000 €   à provisionner           │
+│ 31 déc.  IRCEC          00 000 €  à provisionner           │
 ├──────────────────────────────────────────────────────────┤
 │ ARGENT     Pilote · Prévisions · Simulateur · Fiscal       │  5. Modules en une ligne
 │ MAISON     Foyer · Patrimoine · Retraite                   │     d'état chacun
@@ -313,9 +313,8 @@ Et pour le § 4 : **le fichier `SKILL.md` de la skill concierge** (ou son emplac
 
 ## Sources
 
-- Mail « Mes outils de pilotage : j'aimerais vos retours » au cabinet Fayette & Associés, 24 juillet 2026 (structure de la page Pilote, accès Cloudflare Access).
-- Fil « point de rentrée » / « TR: Delarque Pennylane », 9–10 septembre 2026 (onglet Fiscal, montants TVA et IRCEC, rapprochement Pennylane).
-- Fil « BNC DELARQUE SEBASTIEN », 11 septembre 2026 (Amal prend en main le tableau de bord).
+- Mail au cabinet comptable, 24 juillet 2026 (structure de la page Pilote, accès Cloudflare Access).
+- Échanges avec le cabinet, 9–11 septembre 2026 (onglet Fiscal, échéances de fin d'année, rapprochement Pennylane, prise en main du tableau de bord par la comptable).
 - Mails Cloudflare, 29 mai 2026 (domaine, `mespilotis.pages.dev`, codes Access).
 - Artefact « Brief du matin », 31 août 2026 (format du briefing quotidien).
 - Titres des sessions Claude Code du 24 août au 19 septembre 2026 (modules, routines, cadence des mises à jour).
