@@ -2,7 +2,7 @@
 
 Notes du 19 septembre 2026.
 
-> **Statut de cette note.** Je n'ai pas pu ouvrir l'accueil de mespilotis depuis cette session (voir § 0). Cette note est donc une **grille d'audit + hypothèses + recommandations**, construite à partir de ce que les mails, les sessions Claude et le « Brief du matin » révèlent de l'outil. Chaque hypothèse est marquée *à vérifier*. Dès que j'ai une capture ou le HTML de l'accueil (§ 7), la grille se transforme en audit réel en une passe.
+> **Statut de cette note (mise à jour du 19 septembre, session locale).** L'audit réel est fait : voir [`mespilotis-accueil-ux-audit-constats.md`](mespilotis-accueil-ux-audit-constats.md) et les deux captures (`mespilotis-accueil-mobile.png`, `mespilotis-accueil-desktop.png`, anonymisées car ce dépôt est public). Cette grille reste le raisonnement de départ ; chaque hypothèse du § 2 porte désormais son verdict. **Le plan d'action du § 6 est remplacé par le § 5 des constats** : l'accueil avait été refondu la veille, et quatre hypothèses sur dix étaient fausses.
 
 ---
 
@@ -71,49 +71,49 @@ Les mesures de productivité qui comptent, et que tu peux relever toi-même sur 
 
 ## 2. Grille d'audit (à cocher sur l'écran réel)
 
-Pour chaque critère : pourquoi ça pèse sur ta journée, l'hypothèse que je fais sur l'état actuel, et la recommandation. Les hypothèses marquées **(?)** sont à confirmer sur capture.
+Pour chaque critère : pourquoi ça pèse sur ta journée, l'hypothèse que je fais sur l'état actuel, et la recommandation. Verdicts ajoutés après l'audit réel ; preuves dans la note de constats.
 
 ### A. Friction d'entrée (Cloudflare Access)
 
 - **Pourquoi.** Chaque connexion = ouvrir la boîte mail, retrouver le code, le recopier. Sur téléphone, c'est 45 secondes et un changement d'appli. Si la session Access expire toutes les 24 h (valeur par défaut), c'est une friction quotidienne, sur chaque appareil.
-- **Hypothèse (?)** : durée de session Access laissée par défaut ; connexion par code e-mail uniquement (deux codes demandés à cinq minutes d'écart le 29 mai, signe que le flux est pénible).
+- **Hypothèse — reste ouverte** (réglage Zero Trust, invisible dans le dépôt ; manifeste PWA : absent, constaté) : durée de session Access laissée par défaut ; connexion par code e-mail uniquement (deux codes demandés à cinq minutes d'écart le 29 mai, signe que le flux est pénible).
 - **Reco.** Dans Cloudflare Zero Trust → Access → Applications → mespilotis → *Session duration* : passer à **1 mois** (maximum autorisé). Ajouter **Google** comme fournisseur d'identité pour ton compte (un tap), garder le code e-mail pour le cabinet (domaine `@fayette-associes.fr`). Ajouter un manifeste web pour installer le site sur l'écran d'accueil du téléphone (icône, plein écran).
 - **Gain estimé** : 1 à 2 connexions/jour × 45 s ≈ **5 à 9 heures par an**, et surtout la disparition d'un micro-obstacle qui décourage le « coup d'œil » du matin.
 
 ### B. Hiérarchie : accueil = vue d'ensemble, pas hub de tuiles
 
 - **Pourquoi.** Avec dix modules, la tentation est une grille de cartes « Pilote / Fiscal / Foyer / SEO… ». Chaque carte force un clic, et l'accueil ne répond alors à aucune des trois questions du § 1.
-- **Hypothèse (?)** : l'accueil actuel est soit une redirection vers `/dashboard/pilote/`, soit un hub de liens. Dans le premier cas, l'accueil *est* la page Pilote, et les autres modules ne sont visibles que via le menu. Dans le second, les chiffres sont à un clic.
+- **Hypothèse — fausse** (ni redirection ni tuiles : vue d'ensemble avec verdict, actions et trésorerie) : l'accueil actuel est soit une redirection vers `/dashboard/pilote/`, soit un hub de liens. Dans le premier cas, l'accueil *est* la page Pilote, et les autres modules ne sont visibles que via le menu. Dans le second, les chiffres sont à un clic.
 - **Reco.** Un accueil en **une colonne, cinq blocs** (§ 5) : en-tête avec fraîcheur, 3 chiffres maîtres avec delta, « ce qui a besoin de toi », échéances à 90 jours, puis les modules avec **une ligne d'état chacun** (ex. « Fiscal · IRCEC 11 612 € au 31/12 · à jour »). Le module devient une ligne de statut, pas une porte fermée.
 
 ### C. Fraîcheur des données
 
 - **Pourquoi.** Site statique = les chiffres datent du dernier build. Si le build a trois jours, l'encours affiché est faux et rien ne te le dit. Tu recroises alors dans Pennylane, ce qui annule l'intérêt du cockpit.
-- **Hypothèse (?)** : date de build absente ou en pied de page.
+- **Hypothèse — partielle** (date en tête du hub, mais c'est l'heure du build ; pas de badge d'âge sur le hub ; build déjà automatique) : date de build absente ou en pied de page.
 - **Reco.** En tête d'accueil, sur chaque page : **« Données au jeu. 18 sept., 07:42 · source Pennylane »**, avec un badge orange au-delà de 48 h et rouge au-delà de 5 jours. Et la conséquence logique : rendre le build automatique (launchd sur le Mac à 7 h, ou une Routine Claude qui lance « Mise à jour des pilotis » puis déploie via `wrangler pages deploy`), pour que le badge reste vert sans intervention.
 
 ### D. Ce qui a changé depuis la dernière visite
 
 - **Pourquoi.** Le matin, tu ne veux pas relire des stocks, tu veux les mouvements : encaissement reçu, facture émise, échéance qui s'approche.
-- **Hypothèse (?)** : les KPI sont affichés en valeur absolue, sans delta ni « depuis ».
+- **Hypothèse — partielle** (delta annuel daté sur le CA ; rien depuis la dernière visite) : les KPI sont affichés en valeur absolue, sans delta ni « depuis ».
 - **Reco.** Sous chaque chiffre maître, un delta **daté** (« +4 200 € depuis mar. 16 », pas « +3 % »). Un bloc « 3 mouvements depuis ta dernière visite » alimenté par le diff entre deux builds (le générateur a déjà les deux jeux de données ; il suffit de garder le précédent).
 
 ### E. Échéances et actions
 
 - **Pourquoi.** Les deux gros montants de fin d'année sont connus (acompte TVA 3 729 € le 15 déc., IRCEC 11 612 € au 31 déc.). S'ils ne sont que dans l'onglet Fiscal, ils ne pèsent pas sur les décisions de trésorerie du quotidien.
-- **Hypothèse (?)** : échéances présentes dans Fiscal, absentes de l'accueil.
+- **Hypothèse — à moitié vraie** (retards + prochaine échéance seulement ; TVA de décembre et IRCEC absentes de l'accueil) : échéances présentes dans Fiscal, absentes de l'accueil.
 - **Reco.** Un bandeau **« Prochaines sorties, 90 jours »** sur l'accueil, trié par date, alimenté par Fiscal et par les prévisions cash. Chaque ligne : date, montant, statut (provisionné / à provisionner), et le lien vers la méthodo.
 
 ### F. Qualité des données, remontée en un badge
 
 - **Pourquoi.** Le bloc « qualité des données » de Pilote est une très bonne idée, mais s'il vit en bas d'une page, il ne déclenche rien. Tu as écrit au cabinet vouloir « rapprocher le plus d'opérations possible dans Pennylane » : c'est un travail de fond qui n'avance que si l'outil le rappelle chaque jour.
-- **Hypothèse (?)** : bloc textuel, en bas de Pilote, sans compteur.
+- **Hypothèse — partielle** (compteur présent dans Pilote, rien sur l'accueil) : bloc textuel, en bas de Pilote, sans compteur.
 - **Reco.** Sur l'accueil, un seul badge **vert / orange / rouge** + compteur : « 14 opérations à rapprocher · 2 factures sans échéance ». Clic → liste, chaque ligne avec le lien Pennylane. Cinq minutes par jour sur cette liste valent plus qu'une session de rattrapage par trimestre.
 
 ### G. Navigation : regrouper par question, pas par module
 
 - **Pourquoi.** Dix entrées de menu à plat, c'est dix décisions à chaque visite. Le cabinet, lui, n'a besoin que de trois.
-- **Hypothèse (?)** : menu linéaire, dans l'ordre de création des modules.
+- **Hypothèse — fausse** (dix liens déjà regroupés en Activité / Production / Perso) : menu linéaire, dans l'ordre de création des modules.
 - **Reco.** Quatre groupes : **Argent** (Pilote, Prévisions, Simulateur, Fiscal, Frais fixes), **Maison** (Foyer, Patrimoine, Retraite), **Visibilité** (SEO, Revue de presse, LinkedIn), **Méthode** (Glossaire, Qualité des données). Sur téléphone, le groupe s'ouvre en accordéon ; le groupe le plus utilisé est ouvert par défaut.
 
 ### H. Lisibilité UI des chiffres
@@ -132,7 +132,7 @@ Pour chaque critère : pourquoi ça pèse sur ta journée, l'hypothèse que je f
 ### I. Plusieurs publics, un seul accueil
 
 - **Pourquoi.** L'accueil idéal pour toi (actions, foyer, patrimoine) n'est pas celui du cabinet (Pilote, Fiscal, méthodo). Et Foyer / Patrimoine n'ont rien à faire sous les yeux du cabinet.
-- **Hypothèse (?)** : même page pour tout le monde ; la séparation se fait uniquement par les règles Access, page par page, ou pas du tout.
+- **Hypothèse — fausse d'après le dépôt** (hub réservé à Sébastien, page Conseil distincte ; à confirmer dans Zero Trust) : même page pour tout le monde ; la séparation se fait uniquement par les règles Access, page par page, ou pas du tout.
 - **Reco.** Cloudflare Access transmet l'e-mail de la personne connectée dans un en-tête (`Cf-Access-Authenticated-User-Email`). Un petit script côté page (ou une Function Pages) suffit pour afficher un **accueil « cabinet »** épuré aux domaines externes et ton accueil complet à toi. À défaut, deux entrées : `/` pour toi, `/cabinet/` pour eux, avec des règles Access distinctes.
 
 ### J. Rituels soutenus par l'accueil
