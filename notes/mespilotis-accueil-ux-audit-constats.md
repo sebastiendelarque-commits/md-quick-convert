@@ -9,6 +9,8 @@ Complète la grille [`mespilotis-accueil-ux-audit.md`](mespilotis-accueil-ux-aud
 
 Les chemins `scripts/…`, `data/…`, `skills/…` sont relatifs au projet mespilotis (dossier local `+++PRO/CLAUDE`), pas à ce dépôt.
 
+> **Suivi, 19 septembre après-midi.** Avec l'accord de Sébastien, les P0 n° 1 à 3 et le P1 n° 5 sont implémentés et testés en local (pas encore déployés à l'heure de cette note) : voir les mentions **Fait** au § 5. Le P1 n° 6 a été **corrigé** : l'hypothèse « le briefing tourne à 5 h » était fausse (§ 4, point 3).
+
 ---
 
 ## 0. Ce qui change par rapport à la grille
@@ -212,7 +214,7 @@ Deux corrections au contrat, donc : il s'appelle **`data/briefing.json`** (c'est
 
 **1. Briefing** — `~/.claude/scheduled-tasks/briefing-quotidien/SKILL.md`, une section ajoutée avant le push Telegram :
 
-> « Écrire `data/briefing.json` (schéma ci-dessus) : les 5 items au plus du TOP 3 + mails sans réponse en RELANCE + rappels en retard + décisions bloquantes, en excluant tout ce qui vient de Pennylane (le hub le calcule). Écriture atomique (fichier temporaire puis renommage). Puis lancer `python3 scripts/build_dashboard.py`. »
+> « Écrire `data/briefing.json` (schéma ci-dessus) : les 5 items au plus du TOP 3 + mails sans réponse en RELANCE + rappels en retard + décisions bloquantes, en excluant tout ce qui vient de Pennylane (le hub le calcule). Écriture atomique (fichier temporaire puis renommage). » La tâche ne build pas et ne déploie pas.
 
 **2. Générateur** — `scripts/render_hub.py`, une trentaine de lignes :
 
@@ -224,7 +226,7 @@ Deux corrections au contrat, donc : il s'appelle **`data/briefing.json`** (c'est
 
 Aucun changement dans `build_dashboard.py` : le hub est déjà généré en dernier et isolé des pannes.
 
-**3. Ordonnancement** — c'est le piège. launchd déploie à **4 h 50**, le briefing tourne à **5 h 00** : le fichier écrit à 5 h 04 ne serait en ligne qu'au déploiement de **13 h**. Deux options : décaler le créneau launchd du matin à 5 h 20 (une ligne dans le plist ; le plus simple), ou faire déclencher le déploiement par le briefing (plus fragile : un briefing qui échoue bloquerait la mise en ligne des chiffres). **Recommandation : décaler à 5 h 20.**
+**3. Ordonnancement** — hypothèse corrigée après vérification. La tâche est planifiée à 5 h, mais l'historique de ses lancements montre qu'elle démarre **entre 9 h et 16 h**, à l'ouverture de l'application Claude. Décaler le déploiement de 4 h 50 à 5 h 20 (recommandation initiale de cette note) n'aurait donc servi à rien. Décision retenue : **un troisième créneau launchd à 10 h 30**, en plus de 4 h 50 et 13 h. Un briefing lancé après 13 h n'est pas publié, et le lendemain il est ignoré car périmé : limite assumée. L'option « launchd surveille le fichier et déploie » a été écartée : une tâche autonome qui lit des mails ne doit pas pouvoir déclencher un déploiement, même indirectement.
 
 **4. Concierge** — rien dans l'immédiat. Quand son step 2 existera : en fin de Phase 5, ajouter à `data/briefing.json` ses « Réponses préparées » dans `done[]` (lien vers le brouillon) et ses « Flags à trancher » dans `needs_you[]`. `allowed-tools` contient déjà `Write`.
 
@@ -242,17 +244,17 @@ Rien n'a été modifié dans le projet. Le build local a seulement régénéré 
 
 | # | Changement | Fichier | Effort |
 |---|---|---|---|
-| 1 | **Horodatage honnête + badge d'âge sur le hub.** Afficher le `generated_at` du snapshot Pennylane (pas l'heure du build) ; script qui calcule l'âge à l'ouverture depuis `data-generated` : orange > 48 h, rouge > 5 j. | `scripts/render_hub.py:449-451` et `:595-609` ; réutiliser `_read_json_field` / `_fr_date_iso` de `scripts/render_common.py:49-81` ; test dans `tests/` | 30 min |
-| 2 | **Toutes les échéances à 90 jours** dans « À venir », avec le total. | `scripts/render_hub.py:185-192` (boucle sur `prov["echeances"]`, `totals.total_90j`) | 30 min |
-| 3 | **Téléphone : le verdict et les actions d'abord.** Navigation repliée ou renvoyée en bas sous 760 px. | `scripts/render_hub.py:575-584` (+ `_nav`, `:437-440`) | 30 min |
+| 1 | **Fait.** **Horodatage honnête + badge d'âge sur le hub.** Afficher le `generated_at` du snapshot Pennylane (pas l'heure du build) ; script qui calcule l'âge à l'ouverture depuis `data-generated` : orange > 48 h, rouge > 5 j. | `scripts/render_hub.py:449-451` et `:595-609` ; réutiliser `_read_json_field` / `_fr_date_iso` de `scripts/render_common.py:49-81` ; test dans `tests/` | 30 min |
+| 2 | **Fait.** **Toutes les échéances** dans « À venir », avec le total. Borne retenue : la fin du troisième mois, c'est-à-dire l'horizon de la projection de trésorerie, et non 90 jours stricts qui auraient laissé de côté l'échéance du 31 décembre. | `scripts/render_hub.py:185-192` (boucle sur `prov["echeances"]`, `totals.total_90j`) | 30 min |
+| 3 | **Fait.** **Téléphone : le verdict et les actions d'abord.** Navigation renvoyée en bas sous 760 px, lien « Pages » en tête. Première action à 442 px au lieu de 783. | `scripts/render_hub.py:575-584` (+ `_nav`, `:437-440`) | 30 min |
 | 4 | **Session Access à 1 mois** sur les deux applications ; relever au passage la méthode de connexion et la liste des adresses autorisées (tranche A et I). | Zero Trust — action de Sébastien, hors dépôt | 15 min |
 
 ### P1
 
 | # | Changement | Fichier | Effort |
 |---|---|---|---|
-| 5 | **Brancher le briefing sur le hub** (`data/briefing.json`, § 4). | `~/.claude/scheduled-tasks/briefing-quotidien/SKILL.md` ; `scripts/render_hub.py` (`_briefing`, `resume_hub`, `_actions`, `.lede`) ; `tests/test_render_hub_briefing.py` | 2 h |
-| 6 | **Décaler le déploiement du matin à 5 h 20**, après le briefing. | `~/Library/LaunchAgents/com.delarque.deploy-dashboard.plist` | 10 min |
+| 5 | **Fait** (premier briefing réel à observer). **Brancher le briefing sur le hub** (`data/briefing.json`, § 4). | `~/.claude/scheduled-tasks/briefing-quotidien/SKILL.md` ; `scripts/render_hub.py` (`_briefing`, `resume_hub`, `_actions`, `.lede`) ; `tests/test_render_hub_briefing.py` | 2 h |
+| 6 | **Fait, autrement.** Créneau launchd ajouté à **10 h 30** (voir § 4, point 3) ; le décalage à 5 h 20 est abandonné. | `~/Library/LaunchAgents/com.delarque.deploy-dashboard.plist` | 10 min |
 | 7 | **Indicateur qualité des données** à côté de « Pilote ». | `scripts/render_pilotage.py:1241-1282` (exposer le compte) ; `scripts/render_hub.py:409-412` | 45 min |
 | 8 | **Lisibilité** : `--faint` au-dessus de 4,5:1, textes de 12 px → 13 px, corps 16 px sous 760 px. | `scripts/render_hub.py:475-497`, `:575` | 30 min |
 
@@ -282,4 +284,4 @@ Refonte de l'accueil en cinq blocs (B), regroupement du menu par question (G), a
 
 1. **Échéances à 90 jours sur l'accueil** (P0 n° 2) : la donnée est prête, l'acompte de TVA et l'IRCEC de décembre sont aujourd'hui invisibles. Trente minutes.
 2. **Horodatage honnête + badge d'âge** (P0 n° 1) : le hub affirme « à jour » avec l'heure du build, même sur des données de repli. C'est le seul défaut qui peut faire prendre une mauvaise décision.
-3. **Le briefing dans le hub** (P1 n° 5 et 6) : un fichier JSON, trente lignes dans `render_hub.py`, un créneau launchd décalé. C'est ce qui fait de l'accueil l'unique endroit du matin.
+3. **Le briefing dans le hub** (P1 n° 5 et 6) : un fichier JSON, une lecture filtrée dans `render_hub.py`, un créneau launchd ajouté à 10 h 30. C'est ce qui fait de l'accueil l'unique endroit du matin.
